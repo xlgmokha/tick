@@ -9,6 +9,14 @@ import (
 	"golang.org/x/net/html"
 )
 
+var (
+	tickers map[string]string
+)
+
+func init() {
+	tickers = map[string]string{}
+}
+
 func MapFrom(attrs []html.Attribute) map[string]string {
 	m := map[string]string{}
 	for _, attr := range attrs {
@@ -21,7 +29,7 @@ func Visit(n *html.Node) {
 	if n.Type == html.ElementNode && n.Data == "fin-streamer" {
 		m := MapFrom(n.Attr)
 		if m["data-field"] != "" && strings.Contains(m["data-field"], "Price") {
-			fmt.Printf("%v: %s\n", m["data-symbol"], m["value"])
+			tickers[m["data-symbol"]] = m["value"]
 		}
 	}
 
@@ -35,7 +43,9 @@ func main() {
 		fmt.Printf("Usage:\n\t%s <symbol>\n", os.Args[0])
 		return
 	}
-	response, _ := http.Get(fmt.Sprintf("https://finance.yahoo.com/quote/%s/", os.Args[1]))
+	ticker := os.Args[1]
+	response, _ := http.Get(fmt.Sprintf("https://finance.yahoo.com/quote/%s/", ticker))
 	doc, _ := html.Parse(response.Body)
 	Visit(doc)
+	fmt.Printf("%v\n", tickers[ticker])
 }
