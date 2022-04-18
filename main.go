@@ -31,14 +31,11 @@ func Visit(n *html.Node) {
 }
 
 func main() {
-	response, err1 := http.Get("https://finance.yahoo.com/quote/MSFT/")
-	if err1 != nil {
-		os.Exit(1)
+	if len(os.Args) != 2 {
+		fmt.Printf("Usage:\n\t%s <symbol>\n", os.Args[0])
+		return
 	}
-
-	doc, err := html.Parse(response.Body)
-	if err != nil {
-		os.Exit(2)
-	}
+	response, _ := http.Get(fmt.Sprintf("https://finance.yahoo.com/quote/%s/", os.Args[1]))
+	doc, _ := html.Parse(response.Body)
 	Visit(doc)
 }
