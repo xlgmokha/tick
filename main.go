@@ -43,7 +43,7 @@ func main() {
 		fmt.Printf("Usage:\n\t%s <symbol>\n", os.Args[0])
 		return
 	}
-	ticker := os.Args[1]
+	ticker := strings.ToUpper(os.Args[1])
 	response, _ := http.Get(fmt.Sprintf("https://finance.yahoo.com/quote/%s/", ticker))
 	doc, _ := html.Parse(response.Body)
 	Visit(doc)
